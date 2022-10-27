@@ -54,11 +54,11 @@ info() (echo "${IN_PREFIX}$*" 1>&2)
 
 single-line() (
   if $DEBUG; then
-    xargs -L1 -I '{}' -d$'\n' echo -ne "$1{}\n"
+    xargs -I '{}' -d$'\n' echo -ne "$1{}\n"
   else
     sed -uE "s/(.{$((WIDTH - (${#1} + 10)))}).*$/\1.../" \
       | sed -uE '/^[[:space:]]*$/d' \
-      | xargs --no-run-if-empty -L1 -I '{}' -d$'\n' echo -ne "\r$1{}${RESET}${CLEAR_TO_END_OF_LINE}" \
+      | xargs --no-run-if-empty -I '{}' -d$'\n' echo -ne "\r$1{}${RESET}${CLEAR_TO_END_OF_LINE}" \
       && echo
   fi
 )
@@ -110,7 +110,7 @@ get_new_series() (
   info "New series: '${PLAYLIST_NAME}'!"
 
   # Let's get the URL:
-  INFO_FILE="$(find "${PLAYLIST_NAME}" -type f -name "0-*.info.json" | head -1)"
+  INFO_FILE="$(find "${PLAYLIST_NAME}" -type f -iregex "0+-.*info.json" | head -1)"
   PLAYLIST_URL="$(jq -r .webpage_url "${INFO_FILE}")"
   debug $'\t'"Webpage: ${PLAYLIST_URL}"
 
@@ -223,7 +223,6 @@ get_new_episodes() (
         --output "%(playlist)s/%(playlist_index)s-%(title)s-%(id)s.%(ext)s" \
         --download-archive all.txt \
         --force-download-archive \
-	--no-write-playlist-metafiles \
         'https://www.youtube.com/channel/UC8myOLsYDH1vqYtjFhimrqQ/playlists' 2>&1 | tee "${STDOUT}" | single-line " ${DGREEN}yt-dlp${RESET} │ "; then
       error "An error occurred: yt-dlp exited with ${?}. See '${STDOUT}' for more info. tail of output:"
       tail "${STDOUT}"
