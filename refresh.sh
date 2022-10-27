@@ -223,6 +223,7 @@ get_new_episodes() (
         --output "%(playlist)s/%(playlist_index)s-%(title)s-%(id)s.%(ext)s" \
         --download-archive all.txt \
         --force-download-archive \
+	--no-write-playlist-metafiles \
         'https://www.youtube.com/channel/UC8myOLsYDH1vqYtjFhimrqQ/playlists' 2>&1 | tee "${STDOUT}" | single-line " ${DGREEN}yt-dlp${RESET} │ "; then
       error "An error occurred: yt-dlp exited with ${?}. See '${STDOUT}' for more info. tail of output:"
       tail "${STDOUT}"
