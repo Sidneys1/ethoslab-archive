@@ -110,7 +110,7 @@ get_new_series() (
   info "New series: '${PLAYLIST_NAME}'!"
 
   # Let's get the URL:
-  INFO_FILE="$(find "${PLAYLIST_NAME}" -type f -iregex "0+-.*info.json" | head -1)"
+  INFO_FILE="$(find "${PLAYLIST_NAME}" -type f -regextype sed -iregex '.*/0\{1,\}-.*info\.json' | head -1)"
   PLAYLIST_URL="$(jq -r .webpage_url "${INFO_FILE}")"
   debug $'\t'"Webpage: ${PLAYLIST_URL}"
 
@@ -162,7 +162,7 @@ get_new_episodes() (
   done
 
   # Let's get the URL:
-  INFO_FILE="$(find "${PLAYLIST_NAME}" -type f -name "0-*.info.json" | head -1)"
+  INFO_FILE="$(find "${PLAYLIST_NAME}" -type f -regextype sed -iregex '.*/0\{1,\}-.*info\.json' | head -1)"
   PLAYLIST_URL="$(jq -r .webpage_url "${INFO_FILE}")"
   debug $'\t'"Webpage: ${PLAYLIST_URL}"
 
