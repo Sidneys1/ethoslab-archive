@@ -236,7 +236,11 @@ get_new_episodes() (
   NEW_EPISODES=()
   CURRENT_SERIES=""
   while IFS= read -r -d $'\0' CHANGE; do
-    if [[ "$CHANGE" != \?\?* ]]; then continue; fi
+    debug "Got GIT change '$CHANGE'";
+    if [[ "$CHANGE" != \?\?* ]]; then 
+      debug "Continuing...";
+      continue; 
+    fi
     CHANGE_PATH="$(cut -d' ' -f2- <<<"${CHANGE}")"
     if [[ "${CHANGE_PATH}" == */ ]]; then
       get_new_series "${CHANGE_PATH}"
@@ -250,9 +254,11 @@ get_new_episodes() (
         fi
         NEW_EPISODES=()
         CURRENT_SERIES="${SERIES_NAME}"
+        debug "Series is $SERIES_NAME"
       fi
       EPISODE="$(cut -d'/' -f2- <<<"${CHANGE_PATH}")"
       NEW_EPISODES+=("${EPISODE}")
+      debug "Adding new episode $EPISODE"
     fi
   done < <(git status -z | sort -z)
 
@@ -260,7 +266,7 @@ get_new_episodes() (
     get_new_episodes "${CURRENT_SERIES}" "${NEW_EPISODES[@]}"
     ANY=true
   fi
-
+  
   if $ANY; then
     git add all.txt
     git commit -m 'Updating all.txt.'
